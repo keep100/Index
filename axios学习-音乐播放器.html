@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="js/jQuery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #bottomDiv {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url("images/two.jpg") no-repeat;
+            background-size: 100%;
+            /* filter: blur(5px); */
+        }
+
+        #app {
+            position: absolute;
+            top: 35px;
+            left: 250px;
+            background-color: rgb(241, 243, 244);
+            width: 750px;
+            height: 500px;
+            opacity: 0.8;
+        }
+
+        div.search {
+            padding: 8px 0;
+            line-height: 32px;
+        }
+
+        #search_bar {
+            position: relative;
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        .d7 {
+            background: #008080;
+        }
+
+        .d7:after {
+            content: "";
+            clear: both;
+            display: table
+        }
+
+        .d7 #search_bar {
+            width: auto;
+            float: right;
+            margin-right: 30px;
+        }
+
+        .d7 input {
+            width: 180px;
+            height: 32px;
+            padding-left: 15px;
+            border-radius: 42px;
+            border: 2px solid #324b4e;
+            background: #7BA7AB;
+            outline: none;
+            position: relative;
+            transition: .3s linear;
+        }
+
+        .d7 input::placeholder {
+            color: #3a5658;
+        }
+
+        .d7 input:focus {
+            width: 200px;
+        }
+
+        .d7 button {
+            width: 42px;
+            height: 42px;
+            background: none;
+            border: none;
+            position: absolute;
+            top: -2px;
+            right: 0;
+            cursor: pointer;
+        }
+
+        .d7 button:before {
+            content: "\f002";
+            font-family: FontAwesome;
+            color: #324b4e;
+        }
+
+        #playerName {
+            margin-left: 40px;
+            font-size: 25px;
+            font-family: "幼圆";
+            font-weight: bold;
+        }
+
+        .playerBody {
+            width: 100%;
+            height: 394px;
+            background-color: rgb(152, 201, 175);
+        }
+
+        #parent {
+            float: left;
+            width: 180px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .comment #parent {
+            width: 250px;
+        }
+
+        .musicList {
+            overflow-y: scroll;
+            width: 200px;
+            height: 100%;
+        }
+
+        .commentList {
+            overflow-y: scroll;
+            width: 270px;
+            height: 100%;
+        }
+
+        .musicList li {
+            position: relative;
+            list-style: none;
+            margin: 5px;
+            border-bottom: 1px solid rgb(137, 148, 122);
+            height: 40px;
+            line-height: 40px;
+        }
+
+        .commentList li {
+            list-style: none;
+            border-bottom: 1px solid rgb(137, 148, 122);
+        }
+
+        .musicList li img {
+            position: relative;
+            top: 10px;
+            margin: 0 10px;
+            height: 20px;
+            width: 20px;
+            float: left;
+        }
+
+        .musicPicture {
+            position: relative;
+            float: left;
+            width: 300px;
+            height: 100%;
+        }
+
+        .musicPicture div {
+            margin: 65px auto;
+            width: 180px;
+            height: 180px;
+        }
+
+        .musicPicture div img {
+            width: 100%;
+            height: 100%;
+        }
+
+        #musicName {
+            float: left;
+            width: 90px;
+            height: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        #photo {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            top: 105px;
+            left: 100px;
+            border-radius: 100%;
+        }
+
+        #pointer {
+            position: absolute;
+            top: 0;
+            right: 50px;
+            width: 80px;
+        }
+
+        .playing {
+            transform: rotate(25deg);
+            transform-origin: 10px 0;
+        }
+
+        .comment {
+            width: 268px;
+            height: 100%;
+            float: right;
+        }
+
+        #music_player {
+            position: absolute;
+            width: 100%;
+            bottom: 0px;
+        }
+
+        .line {
+            float: left;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(244deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0) 100%);
+        }
+        .commentList img{
+            margin: 5px;
+            width: 50px;
+            height: 50px;
+            border-radius: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="bottomDiv"></div>
+    <div id="app">
+        <div class="search d7">
+            <label id="playerName">你听</label>
+            <div id="search_bar">
+                <input type="text" placeholder="请输入歌手/歌名" v-model="query" @keyup.enter="searchMusics">
+                <button type="submit" @click="searchMusics"></button>
+            </div>
+        </div>
+        <div class="playerBody">
+            <div id="parent">
+                <div class="musicList">
+                    <ul>
+                        <li v-for="(item,index) in musicList">
+                            <img src="images/音乐播放.png" alt="" @click="playMusic(item.id,index)" class="playBtn">
+                            <div id="musicName">{{item.name}}</div>
+                            <img src="images/音乐-播放中.png" alt="" style="display: none;">
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="line"></div>
+            <div class="musicPicture">
+                <div>
+                    <img src="images/唱片.png" alt="">
+                    <img :src="musicCover" id="photo">
+                </div>
+                <img src="images/唱针.png" alt="" id="pointer">
+            </div>
+            <div class="line"></div>
+            <div class="comment">
+                <div id="parent">
+                    <div class="commentList">
+                        <p><strong>热门留言</strong></p>
+                        <ul>
+                            <li v-for="item in comments">
+                                <img :src="item.user.avatarUrl" alt="">
+                                <span>{{item.user.nickname}}</span>
+                                <p>{{item.content}}</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <audio :src="musicUrl" controls id="music_player" autoplay></audio>
+    </div>
+    <script>
+        let rotateVal = 0;
+        let timer;
+        $(function () {
+            document.querySelector('audio').onplay = function () {
+                document.querySelector('#pointer').classList.add('playing');
+                clearInterval(timer);
+                rotate();
+            }
+            document.querySelector('audio').onpause = function () {
+                document.querySelector('#pointer').classList.remove('playing');
+                clearInterval(timer);
+            }
+        })
+        function rotate() {
+            timer = setInterval(function () {
+                rotateVal += 7;
+                $('.musicPicture>div>img').css('transform', 'rotate(' + rotateVal + 'deg)');
+            }, 100);
+        }
+        let app = new Vue({
+            el: "#app",
+            data: {
+                query: "",
+                musicList: [],
+                musicUrl: "",
+                musicCover:"images/three.jpg",
+                comments:[]
+            },
+            methods: {
+                searchMusics: function () {
+                    let that = this;
+                    axios.get("https://autumnfish.cn/search?keywords=" + this.query)
+                        .then(function (response) {
+                            that.musicList = response.data.result.songs;
+                        })
+                        .catch(function (err) {
+                            console.log(err);
+                        })
+                },
+                playMusic: function (musicId, index) {
+                    $('.playBtn').prop('src', 'images/音乐播放.png');
+                    $('.playBtn')[index].src = 'images/音乐播放暂停.png';
+                    $('.playBtn').siblings('img').css('display', 'none');
+                    $('.playBtn')[index].parentNode.querySelectorAll('img')[1].style.display = 'block';
+                    let that = this;
+                    axios.get("https://autumnfish.cn/song/detail?ids="+musicId)
+                    .then(function(response){
+                        that.musicCover=response.data.songs[0].al.picUrl;
+                    })
+                    axios.get("https://autumnfish.cn/song/url?id=" + musicId)
+                        .then(function (response) {
+                            that.musicUrl = response.data.data[0].url;
+                        })
+                    axios.get("https://autumnfish.cn/comment/hot?type=0&id="+musicId)
+                    .then(function(response){
+                        that.comments=response.data.hotComments;
+                        console.log(that.comments);
+                    })
+                }
+            }
+        })
+        /* let app=new Vue({
+            el:"#app",
+            data:{
+                joke:"这是一个笑话"
+            },
+            methods:{
+                getJoke:function(){
+                    let that=this;
+                    axios.get("https://autumnfish.cn/api/joke")
+                    .then(function(response){
+                        that.joke=response.data;
+                        console.log(that.joke);
+                    },function(err){
+                        console.log(err);
+                    })
+                }
+            }
+        }) */
+        /* $(function(){
+            $('#get').click(function(){
+                axios.get("https://autumnfish.cn/api/joke/list?num=5")
+                .then(function(response){
+                    console.log(response);
+                })
+            })
+            $('#post').click(function(){
+                axios.post("https://autumnfish.cn/api/user/reg",{username:"Mike"})
+                .then(function(response){
+                    console.log(response);
+                })
+            })
+        }) */
+
+    </script>
+</body>
+
+</html>
