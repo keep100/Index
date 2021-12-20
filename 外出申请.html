@@ -21532,7 +21532,7 @@
             <div class="info_list">
               <div><span class="bt">*</span>开始日期</div>
               <div class="form_select">
-                <div class="dOutStartDate" id="outTime">2021-9-30</div>
+                <div class="dOutStartDate" id="outTime"></div>
                 <span id="dOutStartDate">选择</span>
               </div>
             </div>
@@ -21540,7 +21540,7 @@
             <div class="info_list">
               <div><span class="bt">*</span>结束日期</div>
               <div class="form_select">
-                <div class="dOutEndDate" id="inTime">2021-10-10</div>
+                <div class="dOutEndDate" id="inTime"></div>
                 <span id="dOutEndDate">选择</span>
               </div>
             </div>
@@ -21554,7 +21554,7 @@
               <label class="smTitle"><span class="bt">*</span><span class="sNowAddr_required">外出事由</span> </label>
               <div class="weui-cell" style="padding: 0rem;">
                 <div class="weui-cell__bd">
-                  <textarea class="weui-textarea" name="sOutReason" placeholder="" rows="3" style="border: 1px solid #efefef;">去银行办理事务</textarea>
+                  <textarea class="weui-textarea" name="sOutReason" placeholder="" rows="3" style="border: 1px solid #efefef;">去五山校区</textarea>
                 </div>
               </div>
             </div>
@@ -21589,8 +21589,8 @@
     let date = new Date();
     let strTime = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
     console.log('dddd', strTime);
-    document.getElementById('outTime').innerText = "2021-10-03";
-    document.getElementById('inTime').innerText = "2021-10-03";
+    document.getElementById('outTime').innerText = strTime;
+    document.getElementById('inTime').innerText = strTime;
   </script>
   <script type="text/javascript" data-savepage-src="../../plugin/layui/layui.js"></script>
   <script type="text/javascript" data-savepage-src="../../plugin/weui/weui.js"></script>
